@@ -1,12 +1,24 @@
+require("dotenv").config();
+
 const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+
+const db = require("./models");
+//can use db.Poll or db.User
 
 const handle = require("./handlers/index");
+const routes = require("./routes");
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT;
+
+app.use(cors());
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => res.json({ hello: "world" }));
 //(req, res) => res.json({ hello: "world" }) <--- middleware function
+app.use("/api/auth", routes.auth);
 
 app.use(handle.notFound);
 app.use(handle.errors);
