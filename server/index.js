@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => res.json({ hello: "world" }));
 //(req, res) => res.json({ hello: "world" }) <--- middleware function
 app.use("/api/auth", routes.auth);
+app.use("/api/polls", routes.poll);
 
 app.use(handle.notFound);
 app.use(handle.errors);
