@@ -8,7 +8,7 @@ router.route("/").get(handle.showPolls).post(auth, handle.createPoll); //show ev
 //anywhere we use the middleware, we have access to req.decoded which gives us userid
 //const {id} = req.decoded
 
-router.get("/user", auth, handle.userPolls);
+router.get("/user", auth, handle.usersPolls);
 
 router
   .route("/:id")

@@ -11,14 +11,14 @@ exports.showPolls = async (req, res, next) => {
   }
 };
 
-exports.userPolls = async (req, res, next) => {
+exports.usersPolls = async (req, res, next) => {
+  const { id } = req.decoded;
   try {
-    const { id } = req.decoded;
     const user = await db.User.findById(id).populate("polls");
     //by default, each poll was only showing id,
     // using .populate, now each poll from the userdb is now populated with data from the polls db
 
-    res.status(200).json(user);
+    res.status(200).json(user.polls);
   } catch (err) {
     err.status = 400;
     next(err);

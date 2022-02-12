@@ -6,7 +6,7 @@ import decode from "jwt-decode";
 import { store } from "../store/index";
 import { setCurrentUser, addError, setToken } from "../store/actions";
 import Auth from "../components/Auth";
-import ErrorMessage from "../components/Error";
+import ErrorMessage from "../components/ErrorMessage";
 import RouteViews from "./RouteViews";
 import NavBar from "./NavBar";
 
