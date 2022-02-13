@@ -24,13 +24,13 @@ exports.login = async (req, res, next) => {
   try {
     const user = await db.User.findOne({ username: req.body.username });
 
-    const { id, username } = user;
+    const { id, username, xp, polls } = user;
     const valid = await user.comparePassword(req.body.password);
 
     if (valid) {
-      const token = jwt.sign({ id, username }, process.env.SECRET);
+      const token = jwt.sign({ id, username, xp, polls }, process.env.SECRET);
 
-      res.json({ id, username, token });
+      res.json({ id, username, xp, token, polls });
     } else {
       throw new Error();
     }

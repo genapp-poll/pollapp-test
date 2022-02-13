@@ -34,3 +34,21 @@ export const authUser = (path, data) => {
     }
   };
 };
+
+export const xpIncrease = (path, data) => {
+  return async (dispatch) => {
+    try {
+      const { username, id, xp, polls } = await api.call(
+        "post",
+        `users/${path}`,
+        data
+      );
+      const user = { username, id, xp, polls };
+      dispatch(setCurrentUser(user));
+      dispatch(removeError());
+    } catch (err) {
+      const error = err.response.data;
+      dispatch(addError(error.message));
+    }
+  };
+};

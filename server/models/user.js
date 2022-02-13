@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
   polls: [{ type: mongoose.Schema.Types.ObjectId, ref: "Poll" }],
+  xp: {
+    type: Number,
+    default: 0,
+  },
 });
 
 userSchema.pre("save", async function (next) {

@@ -20,6 +20,7 @@ app.get("/", (req, res) => res.json({ hello: "world" }));
 //(req, res) => res.json({ hello: "world" }) <--- middleware function
 app.use("/api/auth", routes.auth);
 app.use("/api/polls", routes.poll);
+app.use("/api/users", routes.user);
 
 app.use(handle.notFound);
 app.use(handle.errors);
