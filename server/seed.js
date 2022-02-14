@@ -22,6 +22,11 @@ const polls = [
   { question: "Boolean?", options: ["True", "False"] },
 ];
 
+const schools = [
+  { name: "Berkeley", points: 0, students: [] },
+  { name: "Stanford", points: 0, students: [] },
+];
+
 const seed = async () => {
   try {
     await db.User.remove();
@@ -55,4 +60,19 @@ const seed = async () => {
   }
 };
 
-seed();
+const schoolSeed = async () => {
+  try {
+    await Promise.all(
+      schools.map(async (school) => {
+        const data = await db.School.create(school);
+        await data.save();
+      })
+    );
+    console.log("CREATED SCHOOLS", JSON.stringify(school));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+// seed();
+schoolSeed();

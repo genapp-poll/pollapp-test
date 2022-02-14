@@ -6,3 +6,4 @@ mongoose.connect("mongodb://localhost/vote"); //database name
 
 module.exports.User = require("./user");
 module.exports.Poll = require("./poll");
+module.exports.School = require("./school");

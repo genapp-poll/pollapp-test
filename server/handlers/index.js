@@ -2,6 +2,7 @@ module.exports = {
   ...require("./auth"),
   ...require("./poll"),
   ...require("./user"),
+  ...require("./school"),
 };
 
 module.exports.notFound = (req, res, next) => {
