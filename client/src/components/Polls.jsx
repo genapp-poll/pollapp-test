@@ -1,6 +1,12 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-import { getPolls, getUserPolls, getCurrentPoll, vote } from "../store/actions";
+import {
+  getPolls,
+  getUserPolls,
+  getCurrentPoll,
+  vote,
+  xpIncrease,
+} from "../store/actions";
 import auth from "../store/reducers/auth";
 
 import "chart.js/auto";
@@ -15,6 +21,7 @@ class Polls extends Component {
     super(props);
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.voteFunction = this.voteFunction.bind(this);
   }
 
   componentDidMount() {
@@ -28,6 +35,28 @@ class Polls extends Component {
     history.push(`/poll/${id}`);
   }
 
+  //only if you vote in the major9ity, then ur xp increases
+  async voteFunction(vote, poll, option, auth) {
+    await vote(poll._id, { answer: option.option });
+    if (this.props.error.message == "Already voted") {
+      return;
+    } else {
+      let highestOption = "";
+      let highestVote = -1;
+      await poll.options.map((option) => {
+        if (option.votes > highestVote) {
+          highestVote = option.votes;
+          highestOption = option.option;
+        }
+      });
+      if (option.option == highestOption) {
+        this.props.xpIncrease(auth.user.id, {
+          xpIncrease: parseInt(10, 10),
+        });
+      }
+    }
+  }
+
   render() {
     const { auth, getPolls, getUserPoll, vote, getCurrentPoll } = this.props;
 
@@ -37,7 +66,7 @@ class Polls extends Component {
         poll.options.map((option) => (
           <div>
             <button
-              onClick={() => vote(poll._id, { answer: option.option })}
+              onClick={() => this.voteFunction(vote, poll, option, auth)}
               key={option._id}
             >
               {option.option}
@@ -125,6 +154,7 @@ export default connect(
     auth: store.auth,
     polls: store.polls,
     pollCurrent: store.getCurrentPoll,
+    error: store.error,
   }),
-  { getPolls, getUserPolls, getCurrentPoll, vote }
+  { getPolls, getUserPolls, getCurrentPoll, vote, xpIncrease }
 )(Polls);

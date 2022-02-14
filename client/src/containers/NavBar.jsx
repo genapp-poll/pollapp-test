@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
 import { logout } from "../store/actions";
+import { xpToLevel } from "../services/xpToLevel";
 
 const NavBar = ({ auth, logout }) => (
   <div>
@@ -22,6 +23,8 @@ const NavBar = ({ auth, logout }) => (
       <li>{auth.isAuthenticated && <a onClick={logout}>Logout</a>}</li>
     </ul>
     {auth.isAuthenticated && <p>Logged in as {auth.user.username}</p>}
+    {auth.isAuthenticated && <p>You have {auth.user.xp} xp</p>}
+    {auth.isAuthenticated && <p>You are level {xpToLevel(auth.user.xp)}</p>}
   </div>
 );
 
