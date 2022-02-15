@@ -20,6 +20,9 @@ const NavBar = ({ auth, logout }) => (
       <li>
         <Link to="/test">Test</Link>
       </li>
+      <li>
+        <Link to="/event">Event</Link>
+      </li>
       <li>{auth.isAuthenticated && <a onClick={logout}>Logout</a>}</li>
     </ul>
     {auth.isAuthenticated && <p>Logged in as {auth.user.username}</p>}

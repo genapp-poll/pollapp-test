@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  school: String,
 });
 
 userSchema.pre("save", async function (next) {

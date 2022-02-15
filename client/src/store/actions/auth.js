@@ -1,6 +1,7 @@
 import { addError, removeError } from "./error";
 import { SET_CURRENT_USER } from "../actionTypes";
 import api from "../../services/api";
+import { getSchool } from "./school";
 
 export const setCurrentUser = (user) => ({
   type: SET_CURRENT_USER,
@@ -38,13 +39,14 @@ export const authUser = (path, data) => {
 export const getUser = (path) => {
   return async (dispatch) => {
     try {
-      const { username, _id, xp, polls } = await api.call(
+      const { username, _id, xp, polls, school } = await api.call(
         "get",
         `users/${path}`
       );
       const id = _id;
-      const user = { username, id, xp, polls };
+      const user = { username, id, xp, polls, school };
       dispatch(setCurrentUser(user));
+      // dispatch(getSchool(school));
       dispatch(removeError());
     } catch (err) {
       const error = err.response.data;

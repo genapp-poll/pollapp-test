@@ -38,8 +38,8 @@ exports.updateXp = async (req, res, next) => {
     if (!user) throw new Error("No user found");
     user.xp = user.xp + xpIncrease;
     await user.save();
-    const { id, username, xp, polls } = user;
-    res.status(202).json({ id, username, xp, polls });
+    const { id, username, xp, polls, school } = user;
+    res.status(202).json({ id, username, xp, polls, school });
   } catch (err) {
     err.status = 400;
     next(err);

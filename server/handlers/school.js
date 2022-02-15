@@ -33,6 +33,7 @@ exports.updateSchool = async (req, res, next) => {
     const { increasePoints, student } = req.body;
 
     const school = await db.School.findById(schoolId);
+    const user = await db.User.findById(student);
     if (!school) throw new Error("No school found");
 
     if (!student) {
@@ -47,8 +48,11 @@ exports.updateSchool = async (req, res, next) => {
         school.students.filter((user) => user.toString() === student).length <=
         0
       ) {
-        school.students.push(student);
+        const final = { student: student, username: user.username };
+        school.students.push(final);
         await school.save();
+        user.school = school._id;
+        await user.save();
 
         res.status(202).json(school);
       } else {
