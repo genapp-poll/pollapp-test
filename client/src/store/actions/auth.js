@@ -72,3 +72,21 @@ export const xpIncrease = (path, data) => {
     }
   };
 };
+
+export const newTestUser = (path, data) => {
+  return async (dispatch) => {
+    try {
+      // const { token, ...user } = await api.call("post", `users/${path}`, data);
+      const { token } = await api.call("post", `auth/newUser`, data);
+      localStorage.setItem("testToken", token);
+      const user = { token };
+      // console.log(token);
+      // api.setToken(token);
+      dispatch(setCurrentUser(user));
+      // dispatch(removeError());
+    } catch (err) {
+      const error = err.response.data;
+      dispatch(addError(error.message));
+    }
+  };
+};

@@ -37,7 +37,7 @@ class Polls extends Component {
 
   //only if you vote in the major9ity, then ur xp increases
   async voteFunction(vote, poll, option, auth) {
-    await vote(poll._id, { answer: option.option });
+    await vote(poll._id, { answer: option.option, token: auth.user.token });
     if (this.props.error.message == "Already voted") {
       return;
     } else {
@@ -49,11 +49,11 @@ class Polls extends Component {
           highestOption = option.option;
         }
       });
-      if (option.option == highestOption) {
-        this.props.xpIncrease(auth.user.id, {
-          xpIncrease: parseInt(10, 10),
-        });
-      }
+      // if (option.option == highestOption) {
+      //   this.props.xpIncrease(auth.user.id, {
+      //     xpIncrease: parseInt(10, 10),
+      //   });
+      // }
     }
   }
 
@@ -73,18 +73,38 @@ class Polls extends Component {
             </button>
           </div>
         ));
+      if (poll.voted.includes(auth.user.token)) {
+        var show = true;
+        var data = poll.options && {
+          labels: poll.options.map((option) => option.option),
+          datasets: [
+            {
+              label: poll.question,
+              backgroundColor: poll.options.map((option) => color()),
+              borderColor: "#323643",
+              data: poll.options.map((option) => option.votes),
+            },
+          ],
+        };
+      } else {
+        console.log("nope");
+      }
 
-      const data = poll.options && {
-        labels: poll.options.map((option) => option.option),
-        datasets: [
-          {
-            label: poll.question,
-            backgroundColor: poll.options.map((option) => color()),
-            borderColor: "#323643",
-            data: poll.options.map((option) => option.votes),
-          },
-        ],
-      };
+      const decide = poll.options.map((option) => {
+        if (option.whoVoted.includes(auth.user.token)) {
+          return (
+            <p>
+              {auth.user.token} voted for {option.option}
+            </p>
+          );
+        }
+      });
+
+      // if (poll.voted.includes(auth.user.token)) {
+      //   this.setState({ show: true });
+      // } else {
+      //   // this.setState({ show: false });
+      // }
 
       return (
         <div
@@ -99,6 +119,8 @@ class Polls extends Component {
             border: "solid",
           }}
         >
+          {decide}
+          <h1>{poll.voted.length * 50 + 36}</h1>
           {poll.question}
           <br></br>
           <div
@@ -119,7 +141,7 @@ class Polls extends Component {
               justifyContent: "center",
             }}
           >
-            {poll.options && <Pie data={data} />}
+            {poll.options && show && <Pie data={data} />}
           </div>
         </div>
       );
@@ -127,12 +149,12 @@ class Polls extends Component {
 
     return (
       <Fragment>
-        {auth.isAuthenticated && (
+        {/* {auth.isAuthenticated && (
           <div>
             <button onClick={getPolls}>All polls</button>
             <button onClick={getUserPolls}>My polls</button>
           </div>
-        )}
+        )} */}
 
         <div
           style={{

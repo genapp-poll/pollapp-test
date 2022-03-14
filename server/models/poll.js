@@ -6,6 +6,20 @@ const optionSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  whoVoted: [{ type: String }],
+});
+
+const commentSchema = new mongoose.Schema({
+  user: String,
+  comment: String,
+  likes: {
+    type: Number,
+    default: 0,
+  },
+  created: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const pollSchema = new mongoose.Schema({
@@ -15,7 +29,9 @@ const pollSchema = new mongoose.Schema({
   },
   question: String,
   options: [optionSchema],
-  voted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  comments: [commentSchema],
+  // voted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  voted: [{ type: String }],
   created: {
     type: Date,
     default: Date.now,

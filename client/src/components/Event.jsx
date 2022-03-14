@@ -23,6 +23,7 @@ class Event extends Component {
     const { getSchool } = this.props;
 
     getSchool(auth.user.school);
+    console.log("ok");
   }
 
   handleChange(e) {
@@ -39,12 +40,23 @@ class Event extends Component {
 
   render() {
     const { currentSchool } = this.props;
+    // const studentNames =
 
-    const studentNames =
-      currentSchool &&
-      currentSchool.students.map((student) => {
+    if (currentSchool) {
+      console.log("hello");
+      console.log(currentSchool);
+      var studentNames = currentSchool.students.map((student) => {
         return <div>--{student.username}</div>;
       });
+    } else {
+      <h1> Loading </h1>;
+    }
+    console.log(studentNames);
+
+    // &&
+    // currentSchool.students.map((student) => {
+    //   return <div>--{student.username}</div>;
+    // });
     // const students = currentSchool.students.map((student) => {
     //   console.log(student);
     //   //   const { username } = api.call("get", `users/${student}`);

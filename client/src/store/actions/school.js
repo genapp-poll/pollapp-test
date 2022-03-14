@@ -20,7 +20,7 @@ export const getSchool = (path) => {
   return async (dispatch) => {
     try {
       const school = await api.call("get", `schools/${path}`);
-      console.log(school);
+      // console.log(school);
       dispatch(setCurrentUserSchool(school));
       dispatch(removeError());
     } catch (err) {

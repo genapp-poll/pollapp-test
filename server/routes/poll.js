@@ -13,8 +13,10 @@ router.get("/user", auth, handle.usersPolls);
 router
   .route("/:id")
   .get(handle.getPoll)
-  .post(auth, handle.vote)
+  .post(handle.vote)
   .delete(auth, handle.deletePoll);
 //accesses by req.params
+
+router.route("/:id/comments").post(handle.comment);
 
 module.exports = router;

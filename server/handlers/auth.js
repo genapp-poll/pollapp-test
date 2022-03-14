@@ -40,3 +40,19 @@ exports.login = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.newUser = async (req, res, next) => {
+  try {
+    const user = await db.User.create(req.body);
+    const { token } = user;
+
+    // // const token = jwt.sign({ id, username }, process.env.SECRET);
+
+    res.status(200).json({ token });
+    // console.log(req.body);
+  } catch (err) {
+    err.message = "error";
+
+    next(err);
+  }
+};

@@ -16,6 +16,8 @@ export const getPolls = () => {
   return async (dispatch) => {
     try {
       const polls = await api.call("get", "polls");
+      const poll = polls[0].question;
+      console.log(`0index-${poll}`);
       dispatch(setPolls(polls));
       dispatch(removeError());
     } catch (err) {
@@ -68,7 +70,9 @@ export const getCurrentPoll = (path) => {
 export const vote = (path, data) => {
   return async (dispatch) => {
     try {
+      console.log(data);
       const poll = await api.call("post", `polls/${path}`, data);
+
       const polls = await api.call("get", "polls");
       dispatch(setPolls(polls));
       dispatch(setCurrentPoll(poll));

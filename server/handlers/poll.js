@@ -88,10 +88,13 @@ exports.deletePoll = async (req, res, next) => {
 };
 
 exports.vote = async (req, res, next) => {
+  // const { answer, token } = req.body;
+  console.log("HELLO");
+  // console.log(answer, token);
   try {
     const { id: pollId } = req.params;
-    const { id: userId } = req.decoded;
-    const { answer } = req.body;
+    const { answer, token } = req.body;
+    // console.log(token);
 
     if (answer) {
       const poll = await db.Poll.findById(pollId);
@@ -104,15 +107,17 @@ exports.vote = async (req, res, next) => {
             option: option.option,
             _id: option._id,
             votes: option.votes + 1,
+            whoVoted: option.whoVoted.concat(token),
           };
         } else {
           return option;
         }
       });
 
-      if (poll.voted.filter((user) => user.toString() === userId).length <= 0) {
-        poll.voted.push(userId);
+      if (poll.voted.filter((user) => user.toString() === token).length <= 0) {
+        poll.voted.push(token);
         poll.options = vote;
+
         await poll.save();
 
         res.status(202).json(poll);
@@ -121,6 +126,46 @@ exports.vote = async (req, res, next) => {
       }
     } else {
       throw new Error("No answer provided");
+    }
+  } catch (err) {
+    err.status = 400;
+    next(err);
+  }
+};
+
+exports.comment = async (req, res, next) => {
+  // const { answer, token } = req.body;
+  // console.log(answer, token);
+  try {
+    const { id: pollId } = req.params;
+    const { comment, token } = req.body;
+    // console.log(token);
+
+    if (comment) {
+      const poll = await db.Poll.findById(pollId);
+
+      if (!poll) throw new Error("No poll found");
+
+      // const vote = poll.options.map((option) => {
+      //   if (option.option === answer) {
+      //     return {
+      //       option: option.option,
+      //       _id: option._id,
+      //       votes: option.votes + 1,
+      //       whoVoted: option.whoVoted.concat(token),
+      //     };
+      //   } else {
+      //     return option;
+      //   }
+      // });
+
+      poll.comments.push({ user: token, comment: comment });
+
+      await poll.save();
+
+      res.status(202).json(poll);
+    } else {
+      throw new Error("No comment proviided");
     }
   } catch (err) {
     err.status = 400;

@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 
-import { xpIncrease } from "../store/actions";
+import { xpIncrease, newTestUser } from "../store/actions";
 
 class IncreaseTest extends Component {
   constructor(props) {
@@ -26,7 +26,19 @@ class IncreaseTest extends Component {
     });
   }
 
+  // rand() {
+  //   if (localStorage.testToken) {
+  //     console.log("nothing happens");
+  //   } else {
+  //     let random = Math.random().toString(36).substr(2); // remove `0.`
+  //     let token = random + random;
+  //     // console.log(random + random);
+  //     this.props.newTestUser("nothing", token);
+  //   }
+  // }
+
   render() {
+    // this.rand();
     return (
       <form onSubmit={this.handleSubmit}>
         <label htmlFor="userId">UserId</label>
@@ -51,4 +63,4 @@ class IncreaseTest extends Component {
   }
 }
 
-export default connect(() => ({}), { xpIncrease })(IncreaseTest);
+export default connect(() => ({}), { xpIncrease, newTestUser })(IncreaseTest);

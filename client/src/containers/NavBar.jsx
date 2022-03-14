@@ -25,7 +25,7 @@ const NavBar = ({ auth, logout }) => (
       </li>
       <li>{auth.isAuthenticated && <a onClick={logout}>Logout</a>}</li>
     </ul>
-    {auth.isAuthenticated && <p>Logged in as {auth.user.username}</p>}
+    {auth.isAuthenticated && <p>Logged in as {auth.user.token}</p>}
     {auth.isAuthenticated && <p>You have {auth.user.xp} xp</p>}
     {auth.isAuthenticated && <p>You are level {xpToLevel(auth.user.xp)}</p>}
   </div>
