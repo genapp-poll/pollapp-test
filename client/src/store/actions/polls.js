@@ -83,3 +83,19 @@ export const vote = (path, data) => {
     }
   };
 };
+
+export const comment = (path, data) => {
+  return async (dispatch) => {
+    try {
+      const poll = await api.call("post", `polls/${path}/comments`, data);
+
+      const polls = await api.call("get", "polls");
+      dispatch(setPolls(polls));
+      dispatch(setCurrentPoll(poll));
+      dispatch(removeError());
+    } catch (err) {
+      const error = err.response.data;
+      dispatch(addError(error.message));
+    }
+  };
+};
