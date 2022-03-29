@@ -29,6 +29,7 @@ import NavBar from "./NavBar";
 
 if (localStorage.testToken) {
   store.dispatch(setCurrentUser({ token: localStorage.testToken }));
+  setToken(localStorage.testToken);
 } else {
   let random = Math.random().toString(36).substr(2); // remove `0.`
   let token = random + random;

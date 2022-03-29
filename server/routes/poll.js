@@ -18,5 +18,6 @@ router
 //accesses by req.params
 
 router.route("/:id/comments").post(handle.comment);
+router.route("/:poll_id/:comment_id/like").post(handle.like_comment);
 
 module.exports = router;

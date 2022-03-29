@@ -101,3 +101,21 @@ export const comment = (path, data) => {
     }
   };
 };
+
+export const like_comment = (poll_id, comment_id, data) => {
+  return async (dispatch) => {
+    try {
+      const poll = await api.call("post", `polls/${poll_id}/${comment_id}/like`, data);
+
+      const polls = await api.call("get", "polls");
+      dispatch(setPolls(polls));
+      dispatch(setCurrentPoll(poll));
+      dispatch(removeError());
+      return true;
+    } catch (err) {
+      const error = err.response.data;
+      dispatch(addError(error.message));
+      return false;
+    }
+  };
+};

@@ -1,12 +1,18 @@
 import { connect } from "react-redux";
 import React, { useState } from 'react';
-import { comment as commentAction } from '../store/actions';
+import { comment as commentAction, like_comment } from '../store/actions';
+import {FaHeart, FaRegHeart} from "react-icons/fa";
 
-const Comment = ({comment, commentAction, poll, user, child=false}) => {
+const Comment = ({comment, commentAction, like_comment, poll, user, child=false}) => {
     const [isReplyin, setIsReplying] = useState(false);
     const [newComment, setNewComment] = useState("");
-    const {token} = user;
-    const {_id, comment:commentText, user:comment_user, likes, parent_comment} = comment;
+    const {_id:user_id, token} = user;
+    const {_id, comment:commentText, user:comment_user, user_likes={}, likes, parent_comment} = comment;
+
+    const {users=[], total} = user_likes;
+
+    const liked = users.some((u) => u.token === token);
+    console.log("liked", liked, users);
 
     const onPressReply = () => {
         setIsReplying(true);
@@ -30,11 +36,15 @@ const Comment = ({comment, commentAction, poll, user, child=false}) => {
         setNewComment(e.target.value);
     }
 
+    const onPressHeart = () => {
+        like_comment(poll._id, _id, {token})
+    }
+
     return (
         <div className='comment' style={{textAlign: "left", padding: 10, paddingTop: child?0:10}}>
             <p className='comment-user' style={{margin: 0}}>{comment_user}</p>
             <p className='comment-body' style={{margin: 0}}>{commentText}</p>
-            <p className='comment-likes' style={{margin: 0}}>{likes}</p>
+            <p className='comment-likes' style={{margin: 0}}><span style={{cursor: "pointer"}} onClick={onPressHeart}>{liked?<FaHeart size={20} color="red" />:<FaRegHeart size={20} color="grey" />}</span> {likes}</p>
             {isReplyin && <div><textarea value={newComment} onChange={onCommentChange} /></div>}
             {!isReplyin && <button onClick={onPressReply}>reply</button>}
             {isReplyin && <button onClick={onPressCancelReply}>cancel</button>}
@@ -47,4 +57,4 @@ function mapStateToProps({auth}){
     return {user: auth.user}
 }
  
-export default connect(mapStateToProps, {commentAction})(Comment);
+export default connect(mapStateToProps, {commentAction, like_comment})(Comment);

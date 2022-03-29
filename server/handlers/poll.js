@@ -1,8 +1,9 @@
+const mongoose = require("mongoose");
 const db = require("../models");
 
 exports.showPolls = async (req, res, next) => {
   try {
-    const polls = await db.Poll.find().populate("user", ["username", "id"]);
+    const polls = await db.Poll.find().populate("user", ["username", "id"]).populate("comments.user_likes.users");
 
     res.status(200).json(polls);
   } catch (err) {
@@ -159,7 +160,7 @@ exports.comment = async (req, res, next) => {
       //   }
       // });
 
-      poll.comments.push({ user: token, comment: comment, parent_comment, reply_to });
+      poll.comments.push({ user: token, comment: comment, parent_comment, reply_to, user_likes: {user: [], total: 0}});
 
       await poll.save();
 
@@ -172,3 +173,49 @@ exports.comment = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.like_comment = async (req, res, next) => {
+  try{
+    const {poll_id, comment_id} = req.params;
+    const {token} = req.body;
+    // const {id: userId} = req.decoded;
+
+    const user = token && await db.User.findOne({token});
+
+    if(token && user){
+      const poll = await db.Poll.findById(poll_id);
+      if (!poll) throw new Error("No poll found");
+
+      const comment_index = poll.comments.findIndex((c) => c._id.toString() === comment_id);
+      if(comment_index === -1) throw new Error("Comment not found");
+
+      poll.comments[comment_index].user_likes = poll.comments[comment_index].user_likes || {users: [], total: 0};
+      poll.comments[comment_index].user_likes.users = poll.comments[comment_index].user_likes.users || [];
+
+      const liked_index = poll.comments[comment_index].user_likes.users.findIndex((u) => u.toString() === user._id.toString());
+      const is_already_liked = liked_index !== -1;
+
+      const userLikes = poll.comments[comment_index].user_likes;
+
+      if(is_already_liked){
+        userLikes.users.splice(liked_index, 1);
+        userLikes.total = userLikes.users.length;
+        poll.comments[comment_index].likes -= 1;
+      }else{
+        userLikes.users.push(new mongoose.Types.ObjectId(user._id));
+        userLikes.total += userLikes.users.length;
+        poll.comments[comment_index].likes += 1;
+      }
+
+      await poll.save();
+      await poll.populate("comments.user_likes.users");
+
+      res.status(202).json(poll);
+    }else{
+      throw new Error("You need to be authenticated to like a comment");
+    }
+  }catch(e){
+    e.staus = 400;
+    next(e);
+  }
+}

@@ -81,7 +81,7 @@ export const newTestUser = (path, data) => {
       localStorage.setItem("testToken", token);
       const user = { token };
       // console.log(token);
-      // api.setToken(token);
+      api.setToken(token);
       dispatch(setCurrentUser(user));
       // dispatch(removeError());
     } catch (err) {

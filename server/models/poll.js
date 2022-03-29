@@ -9,6 +9,14 @@ const optionSchema = new mongoose.Schema({
   whoVoted: [{ type: String }],
 }, {timestamps: true});
 
+const likeSchema = new mongoose.Schema({
+  users: [{type: mongoose.Schema.Types.ObjectId, ref: "User"}],
+  total: {
+    type: Number,
+    default: 0
+  }
+});
+
 const commentSchema = new mongoose.Schema({
   user: String,
   comment: String,
@@ -24,6 +32,7 @@ const commentSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  user_likes: likeSchema,
   created: {
     type: Date,
     default: Date.now,
