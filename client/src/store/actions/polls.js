@@ -93,9 +93,11 @@ export const comment = (path, data) => {
       dispatch(setPolls(polls));
       dispatch(setCurrentPoll(poll));
       dispatch(removeError());
+      return true;
     } catch (err) {
       const error = err.response.data;
       dispatch(addError(error.message));
+      return false;
     }
   };
 };

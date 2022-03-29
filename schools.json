@@ -1,0 +1,38 @@
+[{
+  "_id": {
+    "$oid": "620a0e58e400c87555de0715"
+  },
+  "name": "Berkeley",
+  "points": 160,
+  "students": [
+    {
+      "student": "61fef386d8325dd5af427776",
+      "username": "username"
+    },
+    {
+      "student": "6208b6a83ebf6b8cd0d76e73",
+      "username": "test1"
+    }
+  ],
+  "__v": 8,
+  "opposingSchool": [
+    {
+      "opposingSchoolId": "620a0e58e400c87555de0716",
+      "opposingSchoolName": "Stanford"
+    }
+  ]
+},{
+  "_id": {
+    "$oid": "620a0e58e400c87555de0716"
+  },
+  "name": "Stanford",
+  "points": 0,
+  "students": [],
+  "__v": 2,
+  "opposingSchool": [
+    {
+      "opposingSchoolId": "620a0e58e400c87555de0715",
+      "opposingSchoolName": "Berkeley"
+    }
+  ]
+}]

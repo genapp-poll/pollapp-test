@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   // },
   // school: String,
   // token: { type: String },
-});
+}, {timestamps: true});
 
 // userSchema.pre("save", async function (next) {
 //   try {

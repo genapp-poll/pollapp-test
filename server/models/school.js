@@ -8,6 +8,6 @@ const schoolSchema = new mongoose.Schema({
   },
   // students: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   students: [{}],
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model("School", schoolSchema);

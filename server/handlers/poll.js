@@ -138,7 +138,7 @@ exports.comment = async (req, res, next) => {
   // console.log(answer, token);
   try {
     const { id: pollId } = req.params;
-    const { comment, token } = req.body;
+    const { comment, token, parent_comment=null, reply_to=null } = req.body;
     // console.log(token);
 
     if (comment) {
@@ -159,7 +159,7 @@ exports.comment = async (req, res, next) => {
       //   }
       // });
 
-      poll.comments.push({ user: token, comment: comment });
+      poll.comments.push({ user: token, comment: comment, parent_comment, reply_to });
 
       await poll.save();
 

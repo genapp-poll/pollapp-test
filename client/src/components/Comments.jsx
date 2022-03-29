@@ -6,14 +6,17 @@ import {
   getCurrentPoll,
   vote,
   xpIncrease,
+  comment,
 } from "../store/actions";
 import auth from "../store/reducers/auth";
+import Comment from "./Comment";
 
 const color = () => {
   return "#" + Math.random().toString(16).slice(2, 8);
 };
 
 class Comments extends Component {
+  state={newComment: ""};
   constructor(props) {
     super(props);
 
@@ -30,6 +33,20 @@ class Comments extends Component {
   handleSelect(id) {
     const { history } = this.props;
     history.push(`/poll/${id}`);
+  }
+
+  onChangeComment = (e) => {
+    this.setState({newComment: e.target.value});
+  }
+
+  onPressComment = async (poll) => {
+    const {newComment} = this.state;
+    const {user: {token}} = this.props.auth;
+    if(token){
+      if(await this.props.comment(poll._id, {comment: newComment, token, parent_comment: null, reply_to: null})){
+        this.setState({newComment: ""})
+      }
+    }
   }
 
   //only if you vote in the major9ity, then ur xp increases
@@ -55,12 +72,14 @@ class Comments extends Component {
   }
 
   render() {
-    const { auth, getPolls, getUserPoll, vote, getCurrentPoll } = this.props;
+    const { auth, getPolls, getUserPoll, vote, getCurrentPoll, polls=[] } = this.props;
+    const {newComment} = this.state;
 
-    const polls = this.props.polls.map((poll) => {
+    const Polls = polls.map((poll) => {
+      const {comments, options=[], voted=[], question} = poll;
       const answers =
-        poll.options &&
-        poll.options.map((option) => (
+        options &&
+        options.map((option) => (
           <div>
             <button
               onClick={() => this.voteFunction(vote, poll, option, auth)}
@@ -70,28 +89,34 @@ class Comments extends Component {
             </button>
           </div>
         ));
-      if (poll.voted.includes(auth.user.token)) {
+      if (voted.includes(auth.user.token)) {
         var show = true;
-        var data = poll.options && {
-          labels: poll.options.map((option) => option.option),
+        var data = options && {
+          labels: options.map((option) => option.option),
           datasets: [
             {
-              label: poll.question,
-              backgroundColor: poll.options.map((option) => color()),
+              label: question,
+              backgroundColor: options.map((option) => color()),
               borderColor: "#323643",
-              data: poll.options.map((option) => option.votes),
+              data: options.map((option) => option.votes),
             },
           ],
         };
       } else {
         console.log("nope");
       }
-      const comments = poll.comments.map((comment) => {
+
+      const parentComments = comments.filter((c) => !c.parent_comment);
+
+      const Comments = parentComments.map((comment) => {
+        const childComments = comments.filter((c) => c.parent_comment === comment._id);
+        // console.log("childComments", childComments);
         return (
           <div>
-            <p>{comment.user}</p>
-            <p>{comment.comment}</p>
-            <p>{comment.likes}</p>
+            <Comment comment={comment} key={comment._id} poll={poll} />
+            <ul style={{paddingLeft: 20}} className="child-comments">
+              {childComments.map((c) => <li><Comment comment={c} key={c._id} poll={poll} child /></li>)}
+            </ul>
           </div>
         );
       });
@@ -125,8 +150,10 @@ class Comments extends Component {
             border: "solid",
           }}
         >
-          {comments}
+          {Comments}
           <br></br>
+          <div><textarea value={newComment} onChange={this.onChangeComment} /></div>
+          <button onClick={() => this.onPressComment(poll)}>comment</button>
         </div>
       );
     });
@@ -148,7 +175,7 @@ class Comments extends Component {
             width: "100%",
           }}
         >
-          {polls}
+          {Polls}
         </div>
       </Fragment>
     );
@@ -162,5 +189,5 @@ export default connect(
     pollCurrent: store.getCurrentPoll,
     error: store.error,
   }),
-  { getPolls, getUserPolls, getCurrentPoll, vote, xpIncrease }
+  { getPolls, getUserPolls, getCurrentPoll, vote, xpIncrease, comment }
 )(Comments);

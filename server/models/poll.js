@@ -7,12 +7,20 @@ const optionSchema = new mongoose.Schema({
     default: 0,
   },
   whoVoted: [{ type: String }],
-});
+}, {timestamps: true});
 
 const commentSchema = new mongoose.Schema({
   user: String,
   comment: String,
-  likes: {
+  parent_comment: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
+  },
+  reply_to: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
+  },
+  likes: { // i'd recommend likes to be its own schema which include users 
     type: Number,
     default: 0,
   },
@@ -20,7 +28,7 @@ const commentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, {timestamps: true});
 
 const pollSchema = new mongoose.Schema({
   user: {
@@ -36,6 +44,6 @@ const pollSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model("Poll", pollSchema);

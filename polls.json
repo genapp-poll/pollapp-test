@@ -1,0 +1,73 @@
+[{
+  "_id": {
+    "$oid": "61fef386d8325dd5af42777c"
+  },
+  "question": "Which is the best JavaScript framework",
+  "options": [
+    {
+      "option": "Angular",
+      "votes": 6,
+      "whoVoted": [
+        "e45xe0v3wsde45xe0v3wsd",
+        "u4jl84xh06ju4jl84xh06j"
+      ],
+      "_id": {
+        "$oid": "61fef386d8325dd5af42777d"
+      }
+    },
+    {
+      "option": "React",
+      "votes": 6,
+      "whoVoted": [
+        "i6rf6mzrok7i6rf6mzrok7"
+      ],
+      "_id": {
+        "$oid": "61fef386d8325dd5af42777e"
+      }
+    },
+    {
+      "whoVoted": [],
+      "option": "VueJS",
+      "votes": 2,
+      "_id": {
+        "$oid": "61fef386d8325dd5af42777f"
+      }
+    }
+  ],
+  "voted": [
+    "i6rf6mzrok7i6rf6mzrok7",
+    "e45xe0v3wsde45xe0v3wsd",
+    "u4jl84xh06ju4jl84xh06j"
+  ],
+  "created": {
+    "$date": "2022-02-05T22:00:38.653Z"
+  },
+  "__v": 16,
+  "user": {
+    "$oid": "61fef386d8325dd5af427776"
+  },
+  "comments": [
+    {
+      "user": "e45xe0v3wsde45xe0v3wsd",
+      "comment": "hey",
+      "likes": 0,
+      "_id": {
+        "$oid": "622f052ebdc8d7b22230bb26"
+      },
+      "created": {
+        "$date": "2022-03-14T09:04:46.137Z"
+      }
+    },
+    {
+      "user": "u4jl84xh06ju4jl84xh06j",
+      "comment": "wait this works?",
+      "likes": 0,
+      "_id": {
+        "$oid": "622f054abdc8d7b22230bb2d"
+      },
+      "created": {
+        "$date": "2022-03-14T09:05:14.305Z"
+      }
+    }
+  ]
+}]
