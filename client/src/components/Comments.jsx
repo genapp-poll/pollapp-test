@@ -80,7 +80,7 @@ class Comments extends Component {
       const answers =
         options &&
         options.map((option) => (
-          <div>
+          <div key={option.option}>
             <button
               onClick={() => this.voteFunction(vote, poll, option, auth)}
               key={option._id}
@@ -112,19 +112,20 @@ class Comments extends Component {
         const childComments = comments.filter((c) => c.parent_comment === comment._id);
         // console.log("childComments", childComments);
         return (
-          <div>
-            <Comment comment={comment} key={comment._id} poll={poll} />
+          <div key={comment._id}>
+            <Comment comment={comment} poll={poll} />
             <ul style={{paddingLeft: 20}} className="child-comments">
-              {childComments.map((c) => <li><Comment comment={c} key={c._id} poll={poll} child /></li>)}
+              {childComments.map((c) => <li key={c._id}><Comment comment={c} poll={poll} child /></li>)}
             </ul>
           </div>
         );
       });
 
       const decide = poll.options.map((option) => {
-        if (option.whoVoted.includes(auth.user.token)) {
+        const {whoVoted=[]} = option;
+        if (whoVoted.includes(auth.user.token)) {
           return (
-            <p>
+            <p key={option.option}>
               {auth.user.token} voted for {option.option}
             </p>
           );

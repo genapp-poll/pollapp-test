@@ -3,7 +3,7 @@ const db = require("../models");
 
 exports.showPolls = async (req, res, next) => {
   try {
-    const polls = await db.Poll.find().populate("user", ["username", "id"]).populate("comments.user_likes.users");
+    const polls = await db.Poll.find({open: true}).populate("user", ["username", "id"]).populate("comments.user_likes.users");
 
     res.status(200).json(polls);
   } catch (err) {
@@ -93,14 +93,19 @@ exports.vote = async (req, res, next) => {
   console.log("HELLO");
   // console.log(answer, token);
   try {
+    
     const { id: pollId } = req.params;
     const { answer, token } = req.body;
     // console.log(token);
-
-    if (answer) {
+    
+    const user = token && await db.User.findOne({token});
+    
+    if (answer && token && user) {
       const poll = await db.Poll.findById(pollId);
-
+      
       if (!poll) throw new Error("No poll found");
+      
+      const current_date = Date.now();
 
       const vote = poll.options.map((option) => {
         if (option.option === answer) {
@@ -108,15 +113,15 @@ exports.vote = async (req, res, next) => {
             option: option.option,
             _id: option._id,
             votes: option.votes + 1,
-            whoVoted: option.whoVoted.concat(token),
+            whoVoted: option.whoVoted.push(new mongoose.Types.ObjectId(user._id)),
           };
         } else {
           return option;
         }
       });
 
-      if (poll.voted.filter((user) => user.toString() === token).length <= 0) {
-        poll.voted.push(token);
+      if (poll.voted.filter((u) => u.toString() === user._id).length <= 0) {
+        poll.voted.push(new mongoose.Types.ObjectId(user._id));
         poll.options = vote;
 
         await poll.save();
@@ -126,7 +131,7 @@ exports.vote = async (req, res, next) => {
         throw new Error("Already voted");
       }
     } else {
-      throw new Error("No answer provided");
+      throw new Error(!answer?"No answer provided":!token?"Not authenticated":"User not found");
     }
   } catch (err) {
     err.status = 400;

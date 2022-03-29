@@ -16,7 +16,7 @@ export const getPolls = () => {
   return async (dispatch) => {
     try {
       const polls = await api.call("get", "polls");
-      const poll = polls[0].question;
+      const poll = polls[0]?.question || "NONE";
       console.log(`0index-${poll}`);
       dispatch(setPolls(polls));
       dispatch(removeError());

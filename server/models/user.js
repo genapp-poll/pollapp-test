@@ -16,10 +16,10 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
   // polls: [{ type: mongoose.Schema.Types.ObjectId, ref: "Poll" }],
-  // xp: {
-  //   type: Number,
-  //   default: 0,
-  // },
+  xp: {
+    type: Number,
+    default: 0,
+  },
   // school: String,
   // token: { type: String },
 }, {timestamps: true});

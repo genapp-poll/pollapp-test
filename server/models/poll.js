@@ -6,7 +6,7 @@ const optionSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  whoVoted: [{ type: String }],
+  whoVoted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 }, {timestamps: true});
 
 const likeSchema = new mongoose.Schema({
@@ -47,12 +47,28 @@ const pollSchema = new mongoose.Schema({
   question: String,
   options: [optionSchema],
   comments: [commentSchema],
-  // voted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  voted: [{ type: String }],
+  voted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  // voted: [{ type: String }],
   created: {
     type: Date,
     default: Date.now,
   },
+  open_time: {
+    type: Date,
+    default: null
+  },
+  close_time: {
+    type: Date,
+    default: null
+  },
+  open: {
+    type: Boolean,
+    default: false
+  },
+  close: {
+    type: Boolean,
+    default: false
+  }
 }, {timestamps: true});
 
 module.exports = mongoose.model("Poll", pollSchema);

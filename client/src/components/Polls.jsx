@@ -61,10 +61,11 @@ class Polls extends Component {
     const { auth, getPolls, getUserPoll, vote, getCurrentPoll } = this.props;
 
     const polls = this.props.polls.map((poll) => {
+      const {voted=[]} = poll;
       const answers =
         poll.options &&
         poll.options.map((option) => (
-          <div>
+          <div key={option.option}>
             <button
               onClick={() => this.voteFunction(vote, poll, option, auth)}
               key={option._id}
@@ -73,7 +74,7 @@ class Polls extends Component {
             </button>
           </div>
         ));
-      if (poll.voted.includes(auth.user.token)) {
+      if (voted.includes(auth.user.token)) {
         var show = true;
         var data = poll.options && {
           labels: poll.options.map((option) => option.option),
@@ -91,9 +92,10 @@ class Polls extends Component {
       }
 
       const decide = poll.options.map((option) => {
-        if (option.whoVoted.includes(auth.user.token)) {
+        const {whoVoted=[]} = option;
+        if (whoVoted.includes(auth.user.token)) {
           return (
-            <p>
+            <p key={option.option}>
               {auth.user.token} voted for {option.option}
             </p>
           );
@@ -120,7 +122,7 @@ class Polls extends Component {
           }}
         >
           {decide}
-          <h1>{poll.voted.length * 50 + 36}</h1>
+          <h1>{voted.length * 50 + 36}</h1>
           {poll.question}
           <br></br>
           <div
