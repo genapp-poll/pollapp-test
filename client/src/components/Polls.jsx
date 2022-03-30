@@ -64,7 +64,7 @@ class Polls extends Component {
       const {voted=[]} = poll;
       const answers =
         poll.options &&
-        poll.options.map((option) => (
+        poll.options.filter((o) => o.option).map((option) => (
           <div key={option.option}>
             <button
               onClick={() => this.voteFunction(vote, poll, option, auth)}
@@ -74,10 +74,10 @@ class Polls extends Component {
             </button>
           </div>
         ));
-      if (voted.includes(auth.user.token)) {
+      if (voted.some((v) => v.token === auth.user.token)) {
         var show = true;
         var data = poll.options && {
-          labels: poll.options.map((option) => option.option),
+          labels: poll.options.filter((o) => o.option).map((option) => option.option),
           datasets: [
             {
               label: poll.question,
@@ -90,6 +90,8 @@ class Polls extends Component {
       } else {
         console.log("nope");
       }
+
+      // console.log("data", voted, poll.options);
 
       const decide = poll.options.map((option) => {
         const {whoVoted=[]} = option;

@@ -38,6 +38,8 @@ const Poll = ({ poll, vote }) => {
     ],
   };
 
+  console.log("data", data);
+
   return (
     <div>
       <h3>{poll.question}</h3>

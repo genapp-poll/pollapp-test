@@ -3,7 +3,7 @@ const db = require("../models");
 
 exports.showPolls = async (req, res, next) => {
   try {
-    const polls = await db.Poll.find({open: true}).populate("user", ["username", "id"]).populate("comments.user_likes.users");
+    const polls = await db.Poll.find({open: true}).populate("user", ["username", "id"]).populate("comments.user_likes.users").populate("options.whoVoted").populate("voted");
 
     res.status(200).json(polls);
   } catch (err) {
@@ -105,26 +105,30 @@ exports.vote = async (req, res, next) => {
       
       if (!poll) throw new Error("No poll found");
       
-      const current_date = Date.now();
+      // const current_date = Date.now(); //no longer using time diminishing points
 
       const vote = poll.options.map((option) => {
         if (option.option === answer) {
+          console.log(user);
           return {
             option: option.option,
             _id: option._id,
             votes: option.votes + 1,
-            whoVoted: option.whoVoted.push(new mongoose.Types.ObjectId(user._id)),
+            whoVoted: option.whoVoted.concat(user._id),
           };
         } else {
           return option;
         }
       });
 
-      if (poll.voted.filter((u) => u.toString() === user._id).length <= 0) {
-        poll.voted.push(new mongoose.Types.ObjectId(user._id));
+      if (poll.voted.filter((u) => u.toString() === user._id.toString()).length <= 0) {
+        poll.voted.push(user._id);
         poll.options = vote;
 
         await poll.save();
+
+        poll.populate("options.whoVoted");
+        poll.populate("voted");
 
         res.status(202).json(poll);
       } else {
