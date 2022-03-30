@@ -2,8 +2,9 @@ import { connect } from "react-redux";
 import React, { useState } from 'react';
 import { comment as commentAction, like_comment } from '../store/actions';
 import {FaHeart, FaRegHeart} from "react-icons/fa";
+import {HiReply} from "react-icons/hi";
 
-const Comment = ({comment, commentAction, like_comment, poll, user, child=false}) => {
+const Comment = ({comment, repliedTo, parent, commentAction, like_comment, poll, user, child=false}) => {
     const [isReplyin, setIsReplying] = useState(false);
     const [newComment, setNewComment] = useState("");
     const {_id:user_id, token} = user;
@@ -42,7 +43,9 @@ const Comment = ({comment, commentAction, like_comment, poll, user, child=false}
 
     return (
         <div className='comment' style={{textAlign: "left", padding: 10, paddingTop: child?0:10}}>
-            <p className='comment-user' style={{margin: 0}}>{comment_user}</p>
+            <small className='comment-user' style={{margin: 0}}>{comment_user}</small><br />
+
+            {child && (repliedTo != parent) && <small className="reply-to-comment" style={{color: "grey"}}><HiReply color="grey" /> {repliedTo.comment.slice(0,50)+(repliedTo.comment.length>50?"...":"")}</small>}
             <p className='comment-body' style={{margin: 0}}>{commentText}</p>
             <p className='comment-likes' style={{margin: 0}}><span style={{cursor: "pointer"}} onClick={onPressHeart}>{liked?<FaHeart size={20} color="red" />:<FaRegHeart size={20} color="grey" />}</span> {likes}</p>
             {isReplyin && <div><textarea value={newComment} onChange={onCommentChange} /></div>}

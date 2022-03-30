@@ -110,12 +110,12 @@ class Comments extends Component {
 
       const Comments = parentComments.map((comment) => {
         const childComments = comments.filter((c) => c.parent_comment === comment._id);
-        // console.log("childComments", childComments);
+        console.log("childComments", childComments);
         return (
           <div key={comment._id}>
             <Comment comment={comment} poll={poll} />
             <ul style={{paddingLeft: 20}} className="child-comments">
-              {childComments.map((c) => <li key={c._id}><Comment comment={c} poll={poll} child /></li>)}
+              {childComments.map((c) => <li key={c._id}><Comment comment={c} poll={poll} repliedTo={c.reply_to === comment._id?comment:childComments.find((cc) => cc._id === c.reply_to)} parent={comment} child /></li>)}
             </ul>
           </div>
         );
