@@ -10,6 +10,7 @@ import TestPage from "../pages/TestPage";
 import PollPage from "../pages/PollPage";
 import CreatePollPage from "../pages/CreatePollPage";
 import EventPage from "../pages/EventPage";
+import LeaderBoard from "../pages/LeaderBoard";
 
 const RouteViews = ({ auth, getCurrentPoll }) => (
   <main>
@@ -48,6 +49,7 @@ const RouteViews = ({ auth, getCurrentPoll }) => (
 
       <Route exact path="/test" render={() => <TestPage />} />
       <Route exact path="/event" render={() => <EventPage />} />
+      <Route exact path="/leaderboard" component={LeaderBoard} />
     </Switch>
   </main>
 );

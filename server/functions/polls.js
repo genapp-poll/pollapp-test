@@ -3,7 +3,7 @@ const { HOUR, dayly_poll_open_time, dayly_poll_close_time, poll_open_hours } = r
 
 const MAX_POINTS = 1000;
 
-let leaderBoard = [];
+let leaderBoard = {all_time: [], latest_poll: []};
 
 module.exports.leaderBoard = leaderBoard;
 
@@ -12,26 +12,46 @@ function get_leader_board(){
 }
 
 async function update_leader_board(){
-    leaderBoard = await db.User.find({xp: {$exists: true}}, {xp: 1}).sort({xp: "desc"}).lean(true);
+    // token really shouldn't be included
+    leaderBoard.all_time = await db.User.find({xp: {$exists: true}}, {xp: 1, token: 1}).sort({xp: "desc"}).lean(true);
+    
+    const latest_completed_poll = await db.Poll.findOne({/* close: true */}, {options: 1, close: 1}).populate("options.whoVoted", "xp token").sort({close_time: -1}).lean(true);
+
+    console.log("latest_completed_poll", latest_completed_poll);
+    if(latest_completed_poll){
+        const popular_option = latest_completed_poll.options.reduce((prev, curr, i) => {
+            if(prev && (prev.votes >= curr.votes)){
+                return prev;
+            }
+            return curr;
+        });
+
+        const vote_count = popular_option.votes;
+
+        console.log("popular_option", popular_option);
+    
+        // token really shouldn't be included
+        leaderBoard.latest_poll = popular_option.whoVoted.map((v, i) => ({_id: v._id, token: v.token, xp: MAX_POINTS * ((vote_count/(vote_count-i))), option: popular_option.option,}));
+    }
 }
 
 async function on_poll_close(poll){
     const popular_option = poll.options.reduce((prev, curr, i) => {
-        if(prev && (prev.votes.length >= curr.votes.length)){
+        if(prev && (prev.votes >= curr.votes)){
             return prev;
         }
         return curr;
     });
 
-    const vote_count = popular_option.votes.length;
+    const vote_count = popular_option.votes;
 
-    Promise.all(popular_option.votes.map(async (v, i) => {
+    Promise.all(popular_option.whoVoted.map(async (v, i) => {
         const user = await db.User.findById(v);
 
         const points = MAX_POINTS * ((vote_count/(vote_count-i)));
         // const xp = pointsToXp(points);
         user.xp = (user.xp || 0) + points;
-        await user.save()
+        await user.save();
         return user;
     })).then(update_leader_board);
 }
@@ -39,7 +59,7 @@ async function on_poll_close(poll){
 async function open_poll(){
     const current_poll = await db.Poll.findOne({open: true});
 
-    console.log("open_poll current_poll", current_poll);
+    // console.log("open_poll current_poll", current_poll);
 
     if(!current_poll){
         const poll_open_time = new Date();
@@ -64,7 +84,7 @@ async function open_poll(){
 async function close_poll(){
     const current_poll = await db.Poll.findOne({open: true});
     
-    console.log("close_poll current_poll", current_poll);
+    // console.log("close_poll current_poll", current_poll);
 
     if(current_poll){
         const poll_close_time = new Date();
