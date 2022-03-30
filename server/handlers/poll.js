@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { get_leader_board } = require("../functions/polls");
 const db = require("../models");
 
 exports.showPolls = async (req, res, next) => {
@@ -125,10 +126,13 @@ exports.vote = async (req, res, next) => {
         poll.voted.push(user._id);
         poll.options = vote;
 
-        await poll.save();
+        user.xp = (user.xp || 0) + 50;
 
-        poll.populate("options.whoVoted");
-        poll.populate("voted");
+        await poll.save();
+        user.save(); // purposely not awaiting
+
+        await poll.populate("options.whoVoted");
+        await poll.populate("voted");
 
         res.status(202).json(poll);
       } else {
@@ -223,6 +227,16 @@ exports.like_comment = async (req, res, next) => {
     }else{
       throw new Error("You need to be authenticated to like a comment");
     }
+  }catch(e){
+    e.staus = 400;
+    next(e);
+  }
+}
+
+exports.getLeaderBoard = async (req, res, next) => {
+  try{
+    const lb = get_leader_board();
+    res.status(202).json(lb);
   }catch(e){
     e.staus = 400;
     next(e);

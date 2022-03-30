@@ -36,7 +36,7 @@ exports.updateXp = async (req, res, next) => {
     const user = await db.User.findById(userId);
 
     if (!user) throw new Error("No user found");
-    user.xp = user.xp + xpIncrease;
+    user.xp = (user.xp || 0) + xpIncrease;
     await user.save();
     const { id, username, xp, polls, school } = user;
     res.status(202).json({ id, username, xp, polls, school });

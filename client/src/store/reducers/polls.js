@@ -1,4 +1,4 @@
-import { SET_CURRENT_POLL, SET_POLLS } from "../actionTypes";
+import { SET_CURRENT_POLL, SET_LEADERBOARD, SET_POLLS } from "../actionTypes";
 
 export const polls = (state = [], action) => {
   switch (action.type) {
@@ -17,3 +17,16 @@ export const currentPoll = (state = {}, action) => {
       return state;
   }
 };
+
+export const leaderBoard = (state=[], action) => {
+  switch(action.type){
+    case SET_LEADERBOARD:{
+      const {leader_board} = action.payload;
+      return leader_board;
+    }
+    break;
+
+    default:
+      return state;
+  }
+}

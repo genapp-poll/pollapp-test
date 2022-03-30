@@ -3,6 +3,18 @@ const { HOUR, dayly_poll_open_time, dayly_poll_close_time, poll_open_hours } = r
 
 const MAX_POINTS = 1000;
 
+let leaderBoard = [];
+
+module.exports.leaderBoard = leaderBoard;
+
+function get_leader_board(){
+    return leaderBoard;
+}
+
+async function update_leader_board(){
+    leaderBoard = await db.User.find({xp: {$exists: true}}, {xp: 1}).sort({xp: "desc"}).lean(true);
+}
+
 async function on_poll_close(poll){
     const popular_option = poll.options.reduce((prev, curr, i) => {
         if(prev && (prev.votes.length >= curr.votes.length)){
@@ -13,14 +25,15 @@ async function on_poll_close(poll){
 
     const vote_count = popular_option.votes.length;
 
-    popular_option.votes.forEach(async (v, i) => {
+    Promise.all(popular_option.votes.map(async (v, i) => {
         const user = await db.User.findById(v);
 
         const points = MAX_POINTS * ((vote_count/(vote_count-i)));
         // const xp = pointsToXp(points);
-        // user.xp += xp;
-        // await user.save()
-    });
+        user.xp = (user.xp || 0) + points;
+        await user.save()
+        return user;
+    })).then(update_leader_board);
 }
 
 async function open_poll(){
@@ -75,6 +88,10 @@ async function close_poll(){
         }
     }
 };
+
+module.exports.update_leader_board = update_leader_board;
+
+module.exports.get_leader_board = get_leader_board;
 
 module.exports.open_poll = open_poll;
 

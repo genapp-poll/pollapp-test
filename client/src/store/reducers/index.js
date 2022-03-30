@@ -2,7 +2,7 @@ import { combineReducers } from "redux";
 
 import auth from "./auth";
 import error from "./error";
-import { polls, currentPoll } from "./polls";
+import { polls, currentPoll, leaderBoard } from "./polls";
 import { currentSchool } from "./school";
 
 export default combineReducers({
@@ -11,4 +11,5 @@ export default combineReducers({
   polls,
   currentPoll,
   currentSchool,
+  leaderBoard
 });

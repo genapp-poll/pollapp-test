@@ -10,6 +10,8 @@ router.route("/").get(handle.showPolls).post(auth, handle.createPoll); //show ev
 
 router.get("/user", auth, handle.usersPolls);
 
+router.route("/leaderboard").get(handle.getLeaderBoard);
+
 router
   .route("/:id")
   .get(handle.getPoll)

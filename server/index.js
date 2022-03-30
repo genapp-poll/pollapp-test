@@ -9,7 +9,7 @@ const db = require("./models");
 
 const handle = require("./handlers/index");
 const routes = require("./routes");
-const { open_poll, close_poll, dayly_poll_open_time, dayly_poll_close_time } = require("./functions/polls");
+const { open_poll, close_poll, dayly_poll_open_time, dayly_poll_close_time, update_leader_board } = require("./functions/polls");
 const { DAY } = require("./values");
 
 const app = express();
@@ -17,6 +17,8 @@ const port = process.env.PORT;
 
 app.use(cors());
 app.use(bodyParser.json());
+
+update_leader_board();
 
 let poll_open_time = new Date();
 poll_open_time.setMilliseconds(0);

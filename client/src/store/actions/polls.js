@@ -1,5 +1,5 @@
 import api from "../../services/api";
-import { SET_POLLS, SET_CURRENT_POLL } from "../actionTypes";
+import { SET_POLLS, SET_CURRENT_POLL, SET_LEADERBOARD } from "../actionTypes";
 import { addError, removeError } from "./error";
 
 export const setPolls = (polls) => ({
@@ -40,6 +40,18 @@ export const getUserPolls = () => {
     }
   };
 };
+
+export const getLeaderBoard = () => async (dispatch) => {
+  try{
+    const leader_board = await api.call("get", "polls/leaderboard");
+    console.log("leader_board", leader_board);
+    dispatch({type: SET_LEADERBOARD, payload: {leader_board}});
+    dispatch(removeError());
+  }catch(e){
+    const error = e.response.data;
+    dispatch(addError(error.message));
+  }
+}
 
 export const createPoll = (data) => {
   return async (dispatch) => {

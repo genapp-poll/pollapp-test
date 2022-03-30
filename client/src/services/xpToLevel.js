@@ -1,5 +1,16 @@
 //Take in Xp and return the corresponding level
 
+export const newXpToLevel = (xp) => {
+  let level = 1;
+  let current_level_xp = 50;
+  while(xp >= current_level_xp){
+    current_level_xp = 50 * 1.5 ** level;
+    ++level;
+  }
+
+  return level;
+}
+
 export const xpToLevel = (xp) => {
   if (xp < 50) {
     return 1;
