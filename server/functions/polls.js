@@ -48,12 +48,24 @@ async function on_poll_close(poll){
     Promise.all(popular_option.whoVoted.map(async (v, i) => {
         const user = await db.User.findById(v);
 
+        const user_vote_index = poll.voted.findIndex((v) => v.user.toString() === user._id.toString());
+
+        if(user_vote_index === -1) return;
+        
         const points = MAX_POINTS * ((vote_count/(vote_count-i)));
+
+        poll.voted[user_vote_index].points_gained += points;
+        
         // const xp = pointsToXp(points);
         user.xp = (user.xp || 0) + points;
+
+
         await user.save();
         return user;
-    })).then(update_leader_board);
+    })).then(async () => {
+        await poll.save();
+        update_leader_board();
+    });
 }
 
 async function open_poll(){

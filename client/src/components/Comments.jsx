@@ -143,12 +143,12 @@ class Comments extends Component {
           // onClick={() => this.handleSelect(poll._id)}
           key={poll._id}
           style={{
-            height: "400px",
+            // height: "400px",
             width: "300px",
             margin: "0 auto",
             textAlign: "center",
-            borderColor: "blue",
             border: "solid",
+            borderColor: "blue",
           }}
         >
           {Comments}
@@ -176,6 +176,7 @@ class Comments extends Component {
             width: "100%",
           }}
         >
+          <center><h1>Comments</h1></center>
           {Polls}
         </div>
       </Fragment>

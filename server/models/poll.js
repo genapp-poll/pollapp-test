@@ -47,7 +47,7 @@ const pollSchema = new mongoose.Schema({
   question: String,
   options: [optionSchema],
   comments: [commentSchema],
-  voted: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  voted: [{user: {type: mongoose.Schema.Types.ObjectId, ref: "User" }, points_gained: {type: Number, default: 0}}],
   // voted: [{ type: String }],
   created: {
     type: Date,

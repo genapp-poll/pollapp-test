@@ -8,8 +8,10 @@ const HomePage = (props) => {
   return (
     <div>
       <ErrorMessage />
-      <Polls {...props} />
-      <Comments {...props} />
+      <div style={{display: "flex", alignItems: "flex-start"}}>
+        <Polls {...props} />
+        <Comments {...props} />
+      </div>
     </div>
   );
 }

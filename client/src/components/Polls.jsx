@@ -11,12 +11,16 @@ import auth from "../store/reducers/auth";
 
 import "chart.js/auto";
 import { Pie } from "react-chartjs-2";
+import { Tooltip } from "./common/Tooltip";
+import { FaCrown } from "react-icons/fa";
 
 const color = () => {
   return "#" + Math.random().toString(16).slice(2, 8);
 };
 
 class Polls extends Component {
+  state = {points_gained: 0, option: "", show_tooltip: false};
+
   constructor(props) {
     super(props);
 
@@ -37,10 +41,13 @@ class Polls extends Component {
 
   //only if you vote in the major9ity, then ur xp increases
   async voteFunction(vote, poll, option, auth) {
-    await vote(poll._id, { answer: option.option, token: auth.user.token });
+    const points_gained = await vote(poll._id, { answer: option.option, token: auth.user.token });
     if (this.props.error.message == "Already voted") {
       return;
     } else {
+      this.setState({points_gained, option: option.option, show_tooltip: true}, () => {
+        setTimeout(() => this.setState({show_tooltip: false}), 2000);
+      });
       let highestOption = "";
       let highestVote = -1;
       await poll.options.map((option) => {
@@ -59,25 +66,41 @@ class Polls extends Component {
 
   render() {
     const { auth, getPolls, getUserPoll, vote, getCurrentPoll } = this.props;
+    const {show_tooltip, option: choosen_option} = this.state;
 
     const polls = this.props.polls.map((poll) => {
-      const {voted=[]} = poll;
+      const {voted=[], options=[]} = poll;
+      const hasVoted = voted.find((u) => u.user.token === auth.user.token);
+      const popular_option = options.reduce((prev, curr, i) => {
+        if(prev && (prev.votes >= curr.votes)){
+            return prev;
+        }
+        return curr;
+      });
       const answers =
-        poll.options &&
-        poll.options.filter((o) => o.option).map((option) => (
-          <div key={option.option}>
+        options &&
+        options.filter((o) => o.option).map((option) => {
+          const isVotedOption = option.whoVoted.some((u) => u.token === auth.user.token);
+          return (
+          <div key={option.option} style={{position: "relative"}}>
+            <Tooltip show={(show_tooltip && choosen_option === option.option)} text={`You Gained ${this.state.points_gained} for voting`}>
+              You Gained ${this.state.points_gained} for voting
+            </Tooltip>
+            {hasVoted && popular_option === option && <div title="winning"><FaCrown color="darkorange" size={20} /></div>}
             <button
               onClick={() => this.voteFunction(vote, poll, option, auth)}
               key={option._id}
-            >
+              disabled={!!hasVoted}
+              style={{border: "2px solid", margin: "5px 10px", borderColor: isVotedOption?"green":"transparent", borderRadius: 3}}
+              >
               {option.option}
             </button>
           </div>
-        ));
-      if (voted.some((v) => v.token === auth.user.token)) {
+        )});
+      if (voted.some((v) => v.user.token === auth.user.token)) {
         var show = true;
-        var data = poll.options && {
-          labels: poll.options.filter((o) => o.option).map((option) => option.option),
+        var data = options && {
+          labels: options.filter((o) => o.option).map((option) => option.option),
           datasets: [
             {
               label: poll.question,
@@ -93,7 +116,7 @@ class Polls extends Component {
 
       // console.log("data", voted, poll.options);
 
-      const decide = poll.options.map((option) => {
+      const decide = options.map((option) => {
         const {whoVoted=[]} = option;
         if (whoVoted.includes(auth.user.token)) {
           return (
@@ -110,17 +133,19 @@ class Polls extends Component {
       //   // this.setState({ show: false });
       // }
 
+      const points_gained = hasVoted?.points_gained || 0;
+
       return (
         <div
           // onClick={() => this.handleSelect(poll._id)}
           key={poll._id}
           style={{
-            height: "400px",
+            // height: "400px",
             width: "300px",
             margin: "0 auto",
             textAlign: "center",
-            borderColor: "blue",
             border: "solid",
+            borderColor: "blue",
           }}
         >
           {decide}
@@ -132,6 +157,7 @@ class Polls extends Component {
               display: "flex",
               flexDirection: "row",
               justifyContent: "center",
+              alignItems: "flex-end"
             }}
           >
             {answers}
@@ -139,7 +165,7 @@ class Polls extends Component {
           <div
             style={{
               width: "100%",
-              height: "50px",
+              // height: "50px",
               display: "flex",
               flexDirection: "row",
               justifyContent: "center",
@@ -147,6 +173,7 @@ class Polls extends Component {
           >
             {poll.options && show && <Pie data={data} />}
           </div>
+          <p>You gained {points_gained} from this poll</p>
         </div>
       );
     });
@@ -168,6 +195,7 @@ class Polls extends Component {
             width: "100%",
           }}
         >
+          <center><h1>Poll</h1></center>
           {polls}
         </div>
       </Fragment>

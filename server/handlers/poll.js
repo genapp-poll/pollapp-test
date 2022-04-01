@@ -4,7 +4,7 @@ const db = require("../models");
 
 exports.showPolls = async (req, res, next) => {
   try {
-    const polls = await db.Poll.find({open: true}).populate("user", ["username", "id"]).populate("comments.user_likes.users").populate("options.whoVoted").populate("voted");
+    const polls = await db.Poll.find({open: true}).populate("user", ["username", "id"]).populate("comments.user_likes.users").populate("options.whoVoted").populate("voted.user");
 
     res.status(200).json(polls);
   } catch (err) {
@@ -97,6 +97,7 @@ exports.vote = async (req, res, next) => {
     
     const { id: pollId } = req.params;
     const { answer, token } = req.body;
+    let points_gained = 50;
     // console.log(token);
     
     const user = token && await db.User.findOne({token});
@@ -122,19 +123,19 @@ exports.vote = async (req, res, next) => {
         }
       });
 
-      if (poll.voted.filter((u) => u.toString() === user._id.toString()).length <= 0) {
-        poll.voted.push(user._id);
+      if (poll.voted.filter((v) => v.user.toString() === user._id.toString()).length <= 0) {
+        poll.voted.push({user: user._id, points_gained});
         poll.options = vote;
-
-        user.xp = (user.xp || 0) + 50;
+        
+        user.xp = (user.xp || 0) + points_gained;
 
         await poll.save();
         user.save(); // purposely not awaiting
 
         await poll.populate("options.whoVoted");
-        await poll.populate("voted");
+        await poll.populate("voted.user");
 
-        res.status(202).json(poll);
+        res.status(202).json({poll, points_gained});
       } else {
         throw new Error("Already voted");
       }
