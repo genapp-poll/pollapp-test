@@ -13,9 +13,9 @@ function get_leader_board(){
 
 async function update_leader_board(){
     // token really shouldn't be included
-    leaderBoard.all_time = await db.User.find({xp: {$exists: true}}, {xp: 1, token: 1}).sort({xp: "desc"}).lean(true);
+    leaderBoard.all_time = await db.User.find({xp: {$exists: true}}, {xp: 1, token: 1}).sort({xp: "desc"}).limit(200).lean(true);
     
-    const latest_completed_poll = await db.Poll.findOne({/* close: true */}, {options: 1, close: 1}).populate("options.whoVoted", "xp token").sort({close_time: -1}).lean(true);
+    const latest_completed_poll = await db.Poll.findOne({/* close: true */}, {options: 1, voted: 1, close: 1}).populate("voted.user", "xp token").sort({close_time: -1}).lean(true);
 
     console.log("latest_completed_poll", latest_completed_poll);
     if(latest_completed_poll){
@@ -26,12 +26,17 @@ async function update_leader_board(){
             return curr;
         });
 
-        const vote_count = popular_option.votes;
+        // const vote_count = popular_option.votes;
 
-        console.log("popular_option", popular_option);
+        // console.log("popular_option", popular_option);
     
         // token really shouldn't be included
-        leaderBoard.latest_poll = popular_option.whoVoted.map((v, i) => ({_id: v._id, token: v.token, xp: MAX_POINTS * ((vote_count/(vote_count-i))), option: popular_option.option,}));
+        leaderBoard.latest_poll = latest_completed_poll.voted.map(({user, points_gained}, i) => {
+            
+            const chosen_option = latest_completed_poll.options.find(({whoVoted=[]}) => whoVoted.some((v) => v.toString() === user._id.toString()));
+            
+            return {_id: user._id, token: user.token, xp: points_gained, option: chosen_option && chosen_option.option}
+        });
     }
 }
 
